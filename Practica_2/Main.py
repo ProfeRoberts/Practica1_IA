@@ -33,6 +33,10 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
         current_block = queue.popleft()
         current_pos = current_block.pos
         if current_pos.x == dest.x and current_pos.y == dest.y:
+            if esPorDecision:
+                printMaze(Grid, m=15,n=15, mazeCamino=GridCamino)
+                print()
+                print()
             print("Algoritmo Usado: Búsqueda por anchura")
             print("Camino encontrado!!")
             print("Nodos Totales Visitados = ", cost)
@@ -124,6 +128,10 @@ def busquedaPorProfundidad(Grid, dest: Laberinto, start: Laberinto, GridCamino, 
         current_block = stack.pop()
         current_pos = current_block.pos
         if current_pos.x == dest.x and current_pos.y == dest.y:
+            if esPorDecision:
+                printMaze(Grid, m=15,n=15, mazeCamino=GridCamino)
+                print()
+                print()
             print("Algoritmo Usado: Búsqueda por profundidad")
             print("Camino encontrado!!")
             print("Nodos Totales Visitados = ", cost)
