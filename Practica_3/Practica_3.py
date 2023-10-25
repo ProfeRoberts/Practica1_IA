@@ -175,8 +175,8 @@ def main():
                 [4, 4, 4, 4, 4, 4, 1, 3, 3, 3, 2, 2, 2, 2, 2]]
 
     start = (3, 1)
-    #end = (3, 6)
-    end = (14, 14)
+    end = (3, 6)
+    #end = (14, 14)
 
     printMaze(maze, m=15,n=15, mazeCamino=mazeCami)
 
