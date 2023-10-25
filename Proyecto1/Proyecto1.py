@@ -135,9 +135,9 @@ def astar(maze, start, end, esPrimerPersonaje):
                     numeroASumar = 4
                 elif (maze[current_node.position[0]][current_node.position[1]] == 2):
                     numeroASumar = 1
-                elif (maze[current_node.position[0]][current_node.position[1]] == 1):
+                elif (maze[current_node.position[0]][current_node.position[1]] == 3):
                     numeroASumar = 1000
-                elif (maze[current_node.position[0]][current_node.position[1]] == 1):
+                elif (maze[current_node.position[0]][current_node.position[1]] == 4):
                     numeroASumar = 3
 
 

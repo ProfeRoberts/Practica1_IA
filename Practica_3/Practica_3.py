@@ -53,7 +53,7 @@ def printMaze(maze, m, n, mazeCamino):
         print('\n')
 
 
-def astar(maze, start, end, mazeCamino):
+def astar(maze, start, end, esPrimerPersonaje):
     """Returns a list of tuples as a path from the given start to the given end in the given maze"""
 
     # Create start and end node
@@ -119,8 +119,32 @@ def astar(maze, start, end, mazeCamino):
                 if child == closed_child:
                     continue
 
+            numeroASumar = 0
+            if esPrimerPersonaje:
+                if (maze[current_node.position[0]][current_node.position[1]] == 0):
+                    numeroASumar = 1000
+                elif (maze[current_node.position[0]][current_node.position[1]] == 1):
+                    numeroASumar = 2
+                elif (maze[current_node.position[0]][current_node.position[1]] == 2):
+                    numeroASumar = 4
+                elif (maze[current_node.position[0]][current_node.position[1]] == 3):
+                    numeroASumar = 3
+                elif (maze[current_node.position[0]][current_node.position[1]] == 4):
+                    numeroASumar = 1
+            else:
+                if (maze[current_node.position[0]][current_node.position[1]] == 0):
+                    numeroASumar = 1000
+                elif (maze[current_node.position[0]][current_node.position[1]] == 1):
+                    numeroASumar = 2
+                elif (maze[current_node.position[0]][current_node.position[1]] == 2):
+                    numeroASumar = 1
+                elif (maze[current_node.position[0]][current_node.position[1]] == 3):
+                    numeroASumar = 1000
+                elif (maze[current_node.position[0]][current_node.position[1]] == 4):
+                    numeroASumar = 3
+
             # Create the f, g, and h values
-            child.g = current_node.g + 1
+            child.g = current_node.g + numeroASumar
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
@@ -182,7 +206,14 @@ def main():
 
     print()
 
-    path = astar(maze, start, end, mazeCamino=mazeCami)
+    personaje = input("Ingrese el personaje a elegir:  M(Mono) o O(Pulpo)")
+
+    if (personaje == 'M'):
+        esPrimerPersonaje = True
+    else:
+        esPrimerPersonaje = False
+
+    path = astar(maze, start, end, esPrimerPersonaje)
 
     llenarMapaSecundario(mazeCamino=mazeCami, path=path)
 
