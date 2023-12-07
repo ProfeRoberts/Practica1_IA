@@ -25,6 +25,11 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
     visited_blocks[start.x][start.y] = True
     queue = deque()
     tree = ""
+    arbolIzquierdo = ""
+    arbolDerecho = ""
+    arbolArriba = ""
+    arbolAbajo = ""
+    costo = ""
     sol = Node(start, 0)
     queue.append(sol)
     cells = 4
@@ -41,6 +46,10 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
             print("Camino encontrado!!")
             print("Nodos Totales Visitados = ", cost)
             print("Arbol = ", tree)
+            print("Arbol hacia izquierda = ", arbolIzquierdo)
+            print("Arbol hacia derecha = ", arbolDerecho)
+            print("Arbol hacia arriba = ", arbolArriba)
+            print("Arbol hacia abajo = ", arbolAbajo)
             return current_block.cost
         
         if current_block not in visited_blocks:
@@ -67,8 +76,17 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
                         next_cell = Node(Laberinto(x_pos, y_pos),
                                         current_block.cost + 1)
                         GridCamino[x_pos][y_pos] = 'X' 
+                        costo += "[" + str(x_pos) + ", " + str(y_pos) + "] "#  + str(entre) + " \n "
                         visited_blocks[x_pos][y_pos] = True
                         queue.append(next_cell)
+                        if (adj_cell_x[i] == -1 and adj_cell_y[i] == 0):
+                            arbolArriba += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
+                        elif (adj_cell_x[i] == 0 and adj_cell_y[i] == -1):
+                            arbolIzquierdo += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
+                        elif (adj_cell_x[i] == 0 and adj_cell_y[i] == 1):
+                            arbolDerecho += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
+                        elif (adj_cell_x[i] == 1 and adj_cell_y[i] == 0):
+                            arbolAbajo += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
                         if (esPorDecision and entre > 1):
                             tree += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
                             printMaze(Grid, m=15,n=15, mazeCamino=GridCamino)
@@ -233,7 +251,7 @@ def main():
             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]]
 
-    res2 = busquedaPorProfundidad(maze, destination, starting_position, mazeCamino, esPorDecision=esPorDecision)
+    #res2 = busquedaPorProfundidad(maze, destination, starting_position, mazeCamino, esPorDecision=esPorDecision)
 
 if __name__ == '__main__':
     main()
