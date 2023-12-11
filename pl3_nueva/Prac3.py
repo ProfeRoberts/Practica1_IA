@@ -190,6 +190,7 @@ def astar(maze, start, end, esPrimerPersonaje):
                 elif (maze[current_node.position[0]][current_node.position[1]] == 4):
                     numeroASumar = 3
 
+            numeroASumar = numeroASumar * 2
             # Create the f, g, and h values
             child.g = current_node.g + numeroASumar
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
