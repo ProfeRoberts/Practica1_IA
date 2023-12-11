@@ -1,5 +1,4 @@
 from collections import deque
-from colorama import init
 from colorama import Fore, Back, Style
 import time
 
@@ -13,6 +12,71 @@ class Node:
         self.pos = pos
         self.cost = cost
 
+def display_node_data(nodes: deque):
+    """
+    Prints the x, y coordinates and cost of each node in the array.
+    """
+    nodosAbajo = deque()
+    nodosPrincipal = deque()
+    nodosArribaIzquierda = deque()
+    nodosArribaDerecha = deque()
+    nodosExtraU = deque()
+    nodosExtraR = deque()
+    nodosExtraD = deque()
+
+    esCaminoPrincipal = True
+    for node in nodes:
+        if esCaminoPrincipal:
+            nodosPrincipal.append(node)
+        elif node.pos.y > 2 and node.pos.x > 5:
+            nodosAbajo.append(node)
+        elif node.pos.y < 4 and node.pos.x < 6:
+            nodosArribaIzquierda.append(node)
+        elif node.pos.y > 7 > node.pos.x:
+            if node.pos.y == 8 and node.pos.x == 1:
+                nodosArribaIzquierda.append(node)
+            elif node.pos.y == 8 and node.pos.x == 0:
+                nodosExtraU.append(node)
+            elif node.pos.y > 8 and node.pos.x == 1:
+                nodosExtraR.append(node)
+            else:
+                nodosExtraD.append(node)
+        else:
+            nodosArribaDerecha.append(node)
+        if node.pos.y == 3 and node.pos.x == 6:
+            esCaminoPrincipal = False
+        #print(f"Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end= "   ")
+
+    for node in nodosPrincipal:
+        print(f"Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="\t")
+
+    print()
+    for node in nodosAbajo:
+        print(f"\t Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="")
+
+    print()
+    for node in nodosArribaIzquierda:
+        print(f"\t Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="")
+        if node.pos.x == 3 and node.pos.y == 3:
+            print("\t", end="\n\t")
+
+    print("\t", end="\n\t")
+    for node in nodosArribaDerecha:
+        print(f"\t Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="")
+
+    print("\t", end="\n\t\t")
+    for node in nodosExtraU:
+        print(f"\t Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="")
+
+    print("\t", end="\n\t\t")
+    for node in nodosExtraR:
+        print(f"\t Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="")
+
+    print("\t", end="\n\t\t")
+    for node in nodosExtraD:
+        print(f"\t Nodo: ({node.pos.x}, {node.pos.y}), Costo: {node.cost}   --->", end="")
+
+    print("\n")
 
 def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPorDecision: bool):
     adj_cell_x = [1 if x == "B" else -1 if x == "A" else 0 for x in prior]
@@ -22,14 +86,12 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
                       for j in range(n)]
     visited_blocks[start.x][start.y] = True
     queue = deque()
+    arbolGeneral = deque()
     tree = ""
-    arbolIzquierdo = ""
-    arbolDerecho = ""
-    arbolArriba = ""
-    arbolAbajo = ""
     sol = Node(start, 0)
-    GridCamino[start.x][start.y] = 'X'
     queue.append(sol)
+    arbolGeneral.append(sol)
+    GridCamino[start.x][start.y] = 'X'
     cells = 4
     cost = 0
     while queue:
@@ -44,10 +106,7 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
             print("Camino encontrado!!")
             print("Nodos Totales Visitados = ", cost)
             print("Arbol = ", tree)
-            print("Arbol hacia izquierda = ", arbolIzquierdo)
-            print("Arbol hacia derecha = ", arbolDerecho)
-            print("Arbol hacia arriba = ", arbolArriba)
-            print("Arbol hacia abajo = ", arbolAbajo)
+            display_node_data(arbolGeneral)
             return current_block.cost
 
         if current_block not in visited_blocks:
@@ -66,25 +125,17 @@ def busquedaPorAnchura(Grid, dest: Laberinto, start: Laberinto, GridCamino, esPo
             else:
                 x_pos = current_pos.x + adj_cell_x[i]
                 y_pos = current_pos.y + adj_cell_y[i]
-            if x_pos < 15 and y_pos < 15 and x_pos >= 0 and y_pos >= 0:
+            if 15 > x_pos >= 0 and 15 > y_pos >= 0:
                 visitadosA.append((x_pos, y_pos))
                 if Grid[x_pos][y_pos] == 1:
                     if not visited_blocks[x_pos][y_pos]:
                         entre = entre + 1
-                        print("Entre = ", entre)
                         next_cell = Node(Laberinto(x_pos, y_pos),
                                          current_block.cost + 1)
                         GridCamino[x_pos][y_pos] = 'X'
                         visited_blocks[x_pos][y_pos] = True
                         queue.append(next_cell)
-                        if (adj_cell_x[i] == -1 and adj_cell_y[i] == 0):
-                            arbolArriba += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
-                        elif (adj_cell_x[i] == 0 and adj_cell_y[i] == -1):
-                            arbolIzquierdo += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
-                        elif (adj_cell_x[i] == 0 and adj_cell_y[i] == 1):
-                            arbolDerecho += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
-                        elif (adj_cell_x[i] == 1 and adj_cell_y[i] == 0):
-                            arbolAbajo += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
+                        arbolGeneral.append(next_cell)
                         if (esPorDecision and entre > 1):
                             tree += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
                             printMaze(Grid, m=15, n=15, mazeCamino=GridCamino, visitados=visitadosA)
@@ -167,9 +218,11 @@ def busquedaPorProfundidad(Grid, dest: Laberinto, start: Laberinto, GridCamino, 
                       for j in range(n)]
     visited_blocks[start.x][start.y] = True
     stack = deque()
+    arbolGeneral = deque()
     sol = Node(start, 0)
     GridCamino[start.x][start.y] = 'X'
     stack.append(sol)
+    arbolGeneral.append(sol)
     tree = ""
     neigh = 4
     cost = 0
@@ -185,6 +238,7 @@ def busquedaPorProfundidad(Grid, dest: Laberinto, start: Laberinto, GridCamino, 
             print("Camino encontrado!!")
             print("Nodos Totales Visitados = ", cost)
             print("Arbol = ", tree)
+            display_node_data(arbolGeneral)
             return current_block.cost
         x_pos = current_pos.x
         y_pos = current_pos.y
@@ -209,6 +263,7 @@ def busquedaPorProfundidad(Grid, dest: Laberinto, start: Laberinto, GridCamino, 
                         GridCamino[x_pos][y_pos] = 'X'
                         visited_blocks[x_pos][y_pos] = True
                         stack.append(create_node(x_pos, y_pos, current_block.cost))
+                        arbolGeneral.append(create_node(x_pos, y_pos, current_block.cost))
                         if (esPorDecision and entre > 1):
                             tree += "[" + str(x_pos) + ", " + str(y_pos) + "]   "
                             printMaze(Grid, m=15, n=15, mazeCamino=GridCamino, visitados=visitadosP)
