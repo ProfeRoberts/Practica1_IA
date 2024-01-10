@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 from ucimlrepo import fetch_ucirepo
 from collections import Counter
@@ -139,13 +139,42 @@ def calcular_eficiencia_y_error(predicciones, etiquetas_reales):
     return eficiencia, error
 
 
+def dividir_aleatoria_kfold(tamano_dataset, k=5, seed=None):
+    if seed is not None:
+        np.random.seed(seed)
+
+    # Generar índices aleatorios
+    indices_aleatorios = np.random.permutation(tamano_dataset)
+
+    # Dividir los índices en K grupos
+    grupos_indices = np.array_split(indices_aleatorios, k)
+
+    # Crear listas de índices para entrenamiento y prueba
+    grupos_entrenamiento = []
+    grupos_prueba = []
+
+    for i in range(k):
+        # Seleccionar un grupo como conjunto de prueba
+        indices_prueba = grupos_indices[i]
+
+        # Los demás grupos forman el conjunto de entrenamiento
+        indices_entrenamiento = np.concatenate([grupos_indices[j] for j in range(k) if j != i])
+
+        grupos_entrenamiento.append(indices_entrenamiento)
+        grupos_prueba.append(indices_prueba)
+
+    return grupos_entrenamiento, grupos_prueba
+
+
 def validacion_cruzada_kfold(X, y, k=5, distance_metric='euclidean', clasificador='min_distancia', kn=1):
-    kf = KFold(n_splits=k, shuffle=True, random_state=42)
+    tamano_dataset = len(X)
+    grupos_entrenamiento, grupos_prueba = dividir_aleatoria_kfold(tamano_dataset, k=k, seed=42)
+
     totalEf = []
     totalErr = []
-    for i, (train_index, test_index) in enumerate(kf.split(X), 1):
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
+    for i in range(k):
+        X_train, X_test = X[grupos_entrenamiento[i]], X[grupos_prueba[i]]
+        y_train, y_test = y[grupos_entrenamiento[i]], y[grupos_prueba[i]]
 
         if clasificador == 'min_distancia':
             # Inicializar y entrenar el clasificador de mínima distancia
