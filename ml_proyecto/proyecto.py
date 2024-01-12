@@ -6,17 +6,18 @@ from ucimlrepo import fetch_ucirepo
 from collections import Counter
 from tabulate import tabulate
 from sklearn.feature_selection import SelectKBest, f_classif, mutual_info_classif, f_regression, chi2
+#Se importan librerias necesarias para el manejo de datos y las operaciones de aprendizaje automático.
 
-
+#Obtiene un dataframe y devuelve otro, pero unicamente con las columnas relacionadas
 def seleccionar_columnas(dataframe, columnas_seleccionadas):
     nuevo_dataframe = dataframe[columnas_seleccionadas]
     return nuevo_dataframe
 
-
+#Mide la distancia euclidiana para 2 datos
 def euclidean_distance(x1, x2):
     return np.sqrt(np.sum((x1 - x2) ** 2))
 
-
+#Mide la distancia manhattan entre 2 datos
 def manhattan_distance(x1, x2):
     return np.sum(np.abs(x1 - x2))
 
@@ -24,7 +25,7 @@ def manhattan_distance(x1, x2):
 def calcular_promedio_por_columna(matriz):
     return np.mean(matriz, axis=0)
 
-
+#Obtiene el promedio por clase
 def calcular_promedio_por_clase(matriz_datos, matriz_etiquetas, clase):
     # Filtrar las filas correspondientes a la clase
     filas_clase = matriz_datos[matriz_etiquetas == clase]
@@ -32,6 +33,7 @@ def calcular_promedio_por_clase(matriz_datos, matriz_etiquetas, clase):
     return np.mean(filas_clase, axis=0)
 
 
+#Imprime la matriz de datos recibida
 def imprimir_data(matriz_datos):
     indice = 0
     for fila in matriz_datos:
@@ -42,6 +44,7 @@ def imprimir_data(matriz_datos):
         indice += 1
 
 
+#Impime la clases
 def imprimir_clases(matriz_etiquetas):
     indice = 0
     for fila in matriz_etiquetas:
@@ -60,10 +63,15 @@ class MinDistanceClassifier:
         self.X_train = X_train
         self.y_train = y_train
 
+
     def predict(self, X_test):
         predictions = [self._predict(x) for x in X_test]
         return np.array(predictions)
 
+    #Evalua las clases unicas disponibles, se calcula el promedio por clase,
+    # posteriormente si la distancia entre el nuevo punto y el promedio de la clase es menor
+    # a la distancia minimala nueva distancia minima de esta clase sera la distancia entre el punto y el promedio
+    # Y su clase predicha será cambiada
     def _predict(self, x):
         clases_unicas = np.unique(self.y_train)
         distancia_minima = float('inf')
@@ -396,6 +404,8 @@ def preprocesar_y_balancear(dataframe, base, columna_clase, umbral=1.5):
     return dataframe_balanceado
 
 
+
+#Se inicia el programa y se elige si usar un dato por default o buscar por id
 entrada1 = int(input("Desea :\n (0)Usar datos predeterminados\n (1)Ingresar un id de la pagina 'UC Irvine'\n :"))
 if entrada1 == 0:
     entrada = int(input("\nDatos disponibles : \n (0)Glass Identification\n (1)Congressional voting\n (2)Heart disease\n :"))
@@ -408,6 +418,7 @@ if entrada1 == 0:
 elif entrada1 == 1:
     id = int(input("\nIngrese el id de la base de datos :"))
 base = fetch_ucirepo(id=id)
+#Se obtienen los datos, los features y los tragets
 datos = base.data.original
 
 features = base.data.features
@@ -415,20 +426,28 @@ targets = base.data.targets
 
 # Imprimir el DataFrame original
 print("\n - DataFrame original:")
+#Se imprimen todos los datos
 print(datos)
 # print(tabulate(datos, headers = 'keys', tablefmt = 'psql'))
 
+#Separa en categorias los datos en categorycal, binario y otros
+#En caso de se categorical, se imprimiran sus posibles categorias
+#En caso de ser otros se imprimira el valor minimo, el maximo, su promedio y su desviacion estandar
 imprimir_resumen_atributos(datos, base)
 
+#Verifica que valores tienen campos faltantes y que linea estan (Ejemplo (Linea 47, datos faltante: 'Peso'))
 tuplas_faltantes = detectar_valores_faltantes(datos)
 
 print("\nTuplas con valores faltantes:")
 for tupla in tuplas_faltantes:
     print(tupla)
 
+#Imprime todas las columnas que tiene la base
 columnas_disponibles = features.columns
 print("\nColumnas disponibles: ", columnas_disponibles)
 
+#En caso de que el usuario seleccione la opción 1 la data se obtendran de los features
+#Caso contrario se obtendran unicamente las columnas ingresadas por el usuario y estas tienen que entrar separadas por ,
 # Vector de entrada
 print("\n  ** Columnas para el vector de entrada **")
 colum = int(input("Desea:\n (1)Usar todas las columnas \n (2)Seleccionar algunas columnas\n: "))
@@ -446,23 +465,37 @@ if colum == 2:
 
 elif colum == 1:
     Xdata = features
+
+#Imprime el nuevo vector de entrada segun lo que haya ingresado el usuario anteriormente
 print("\nNuevo DataFrame con Vector de Entrada:")
 print(Xdata)
 
 # Prepocesamiento
+#0 es u no
+#1 es un si para realizar one-hot encoding
+#Un One-hot encoding se refiere a ver cuantas categorias hay en una columna y separarlos
+#Ejemplo:
+#Columna sexo tiene femenino y masculino ->  sexo1, sexo2 (sexo 1 tomara valor
+# verdadero si es femenino y sexo 2 tomara valor falso)
 encoding = int(input("Desea realizar One-hot encoding para atributos categoricos? 0/1 : "))
 if encoding == 1:
     Xdata = one_hot_encoding(Xdata, base)
     print("\n - DataFrame con One-hot encoding:")
     print(Xdata)
 
+#0 es no
+#1 rellenra los valores faltantes con la media de cada columna,
+# en caso de ser categoricos, tambien sacará el promedio de estos igual
 if bool(tuplas_faltantes):
     faltantes = int(input("Desea rellenar los datos faltantes? 0/1 : "))
     if faltantes == 1:
         Xdata = reemplazar_valores_faltantes_con_media(Xdata)
         print("\n - DataFrame sin valores faltantes:")
         print(Xdata)
-
+#0 es no
+#1 normalizará los valores con:
+#Con la siguiente formula (valor - valor minimo)/(valor maximo - valor minimo)
+#Es para poner en porcentaje cada valor
 normal = int(input("Desea normalizar los valores? 0/1 : "))
 if normal == 1:
     Xdata = normalizar_dataframe(Xdata)
@@ -472,6 +505,7 @@ if normal == 1:
 X = Xdata.values
 
 # Vector de salida
+#Se observan las columnas que contiene targets
 columnas_disponibles = targets.columns
 print("\nColumnas disponibles: ", columnas_disponibles)
 print("\n  ** Columnas para el vector de salida **")
@@ -487,7 +521,9 @@ else:
     yclase = seleccionar_columnas(datos, columnas_a_seleccionar)
     print("\nNuevo DataFrame con Vector de Salida:")
     print(yclase)
+#Yclase son las columnas seleccionadas del dataframe
 
+    #Se inicia ciclo
     for columna in columnas_a_seleccionar:
         yclase = seleccionar_columnas(datos, [columna])
         print(f"\nSalida con la columna seleccionada '{columna}':")
@@ -500,6 +536,10 @@ else:
 
         # Dividir el conjunto de datos en entrenamiento y prueba
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=percent, random_state=42, stratify=y)
+        #X_train son los datos en x elegidos para entrenar
+        #X_test son los datos en x elegidos para ser puestos a prueba
+        #Y_train son los datos en y elegidos para entrenar
+        #Y_test son los datos en y elegidos para poner a prueba
         # Inicializar y entrenar el clasificador de mínima distancia
         min_distance_classifier = MinDistanceClassifier()
         min_distance_classifier.fit(X_train, y_train)
@@ -508,6 +548,8 @@ else:
         y_pred = min_distance_classifier.predict(X_test)
 
         print("\n\t\t - Predicciones finales -\n")
+        #Se compararan los datos del test con la predicción y se mostrarán los resultados
+        #Su eficiencia y sus errores
         eficiencia, error = calcular_eficiencia_y_error(y_pred, y_test)
 
         print(f"Porcentaje de Eficiencia: {eficiencia:.2f}%")

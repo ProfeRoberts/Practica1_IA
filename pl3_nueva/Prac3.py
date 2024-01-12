@@ -129,6 +129,8 @@ def astar(maze, start, end, esPrimerPersonaje):
         open_list.pop(current_index)
         closed_list.append(current_node)
 
+        print(current_node.position)
+
         # Found the goal
         if current_node == end_node:
             for pos in open_list + closed_list:
@@ -157,9 +159,11 @@ def astar(maze, start, end, esPrimerPersonaje):
 
             # Append
             children.append(new_node)
-
+        numero = 0
+        stri = ""
         # Loop through children
         for child in children:
+            numero = numero +1
 
             # Child is on the closed list
             for closed_child in closed_list:
@@ -190,7 +194,16 @@ def astar(maze, start, end, esPrimerPersonaje):
                 elif (maze[current_node.position[0]][current_node.position[1]] == 4):
                     numeroASumar = 3
 
+
+
+
+
+
+
+
             numeroASumar = numeroASumar * 2
+
+
             # Create the f, g, and h values
             child.g = current_node.g + numeroASumar
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
@@ -204,6 +217,14 @@ def astar(maze, start, end, esPrimerPersonaje):
 
             # Add the child to the open list
             open_list.append(child)
+            stri = stri + str(child.position) + "--->"
+
+            if numero == 4:
+                print(stri)
+                print()
+                print()
+
+
 
 
 def llenarMapaSecundario(mazeCamino, path):
