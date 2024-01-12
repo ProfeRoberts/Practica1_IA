@@ -115,7 +115,9 @@ class KNNClassifier:
         else:
             raise ValueError("Invalid distance metric. Choose 'euclidean' or 'manhattan'.")
 
+        # Se obtiene una lista k con los datos mas cercanos al nuevo punto
         k_indices = np.argsort(distances)[:self.k]
+        # Se obtiene una lista k de las clases con los datos mas cercanos al nuevo punto
         k_nearest_labels = [self.y_train[i] for i in k_indices]
         # Usar Counter para contar la frecuencia de cada elemento
         contador = Counter(k_nearest_labels)
@@ -567,8 +569,13 @@ else:
         tamaño = tamaño / 100
         testbt = int(input("\nIngrese el porcentaje de prueba de cada subconjunto(%) :"))
         testbt = testbt / 100
+        #Se realiza la validacion bootstrap
+        #Es decir se obtienen los valores manera aleatoria y estos pueden ser usados multiples veces mientras que otros
+        # no ser usados siendo kbt el numero de veces que se repetira el algoritmo de distancia minima,
+        # tamaño como el tamaño de los subconjuntos y testtbt el porcentaje de pruebas por subconjunto
         validacion_bootstrap(X, y, kbt, tamaño, testbt)
 
+        #Inicia KNN
         kn = int(input("\n\t- KNN -\nIngrese el valor de k: "))
         print("\n \t *** Train and test ***")
         # Dividir el conjunto de datos en entrenamiento y prueba
