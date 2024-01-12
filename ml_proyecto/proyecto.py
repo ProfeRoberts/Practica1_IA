@@ -529,6 +529,7 @@ else:
         print(f"\nSalida con la columna seleccionada '{columna}':")
         print(yclase)
         # imprimir_resumen_atributos_por_clases(datos, Xdata, base, columna)
+        #Convierte los datos de columnas a un arreglo
         y = yclase.iloc[:, -1].values
 
         percent = int(input("\n\t- Minima Distancia -\n \t *** Train and test ***\nIngrese el porcentaje de datos a ser testeados (%): "))
@@ -557,6 +558,7 @@ else:
 
 #####################################################################################################################
         k = int(input("\n \t *** Validacion cruzada kfold ***\nIngrese el valor de k : "))
+        #Al llamar este metodo sin establecer knn, se realizara por distancia minima y este se repetira k veces
         validacion_cruzada_kfold(X, y, k)
 
 #####################################################################################################################
