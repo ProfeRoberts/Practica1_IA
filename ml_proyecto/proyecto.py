@@ -530,7 +530,7 @@ else:
         yclase = seleccionar_columnas(datos, [columna])
         print(f"\nSalida con la columna seleccionada '{columna}':")
         print(yclase)
-        # imprimir_resumen_atributos_por_clases(datos, Xdata, base, columna)
+        imprimir_resumen_atributos_por_clases(datos, Xdata, base, columna)
         #Convierte los datos de columnas a un arreglo
         y = yclase.iloc[:, -1].values
 
